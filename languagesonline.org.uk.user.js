@@ -18,20 +18,46 @@
     }
 
     function fillAnswers() {
-        // Check if the variable I (for fill-in-the-gap exercises) is defined and is an array
+        // Ensure the 'I' variable exists and is an array
         if (typeof I !== 'undefined' && Array.isArray(I)) {
-            // Loop through each item in the I array
-            for (var i = 0; i < I.length; i++) {
-                if (I[i] && I[i][1] && I[i][1][0] && I[i][1][0][0]) {
-                    // Extract the correct answer
-                    var answer = I[i][1][0][0];
-                    // Find the corresponding input element by ID
-                    var gapElement = document.getElementById('Gap' + i);
-                    if (gapElement) {
-                        // Set the value to the correct answer
-                        gapElement.value = answer;
+    
+            // Determine the quiz type based on the structure of 'I'
+            var isGapFillQuiz = I.length > 0 && Array.isArray(I[0][1]);
+            var isShortAnswerQuiz = I.length > 0 && Array.isArray(I[0][3]);
+    
+            if (isGapFillQuiz) {
+                // Gap-fill quiz logic
+                for (var i = 0; i < I.length; i++) {
+                    if (I[i] && I[i][1] && I[i][1][0] && I[i][1][0][0]) {
+                        // Get the answer from the 'I' array
+                        var answer = I[i][1][0][0];
+                        // Find the input element corresponding to this gap
+                        var gapElement = document.getElementById('Gap' + i);
+                        if (gapElement) {
+                            // Fill in the answer
+                            gapElement.value = answer;
+                        }
                     }
                 }
+            } else if (isShortAnswerQuiz) {
+                // Short answer quiz logic
+                for (var qNum = 0; qNum < I.length; qNum++) {
+                    if (I[qNum] && I[qNum][3] && Array.isArray(I[qNum][3])) {
+                        for (var aNum = 0; aNum < I[qNum][3].length; aNum++) {
+                            var answerData = I[qNum][3][aNum];
+                            if (answerData && answerData[2] === 1) {
+                                var answerText = answerData[0];
+                                var inputElement = document.getElementById('Q_' + qNum + '_Guess');
+                                if (inputElement) {
+                                    inputElement.value = answerText;
+                                }
+                                break; // Stop after finding the first correct answer
+                            }
+                        }
+                    }
+                }
+            } else {
+                console.log('Unsupported quiz type or unrecognized structure.');
             }
         }
         // Check if variables L and G (for letter-based exercises) are defined and are arrays
