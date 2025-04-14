@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         languagesonline.org.uk autofill
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/spanishscripts/languagesonline.org.uk/blob/main/languagesonline.org.uk.user.js
 // @version      1.0
 // @description  Automatically fills in answers on languagesonline.org.uk exercises
 // @author       SpanishScripts
