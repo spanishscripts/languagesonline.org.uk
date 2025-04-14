@@ -24,6 +24,9 @@
             // Determine the quiz type based on the structure of 'I'
             var isGapFillQuiz = I.length > 0 && Array.isArray(I[0][1]);
             var isShortAnswerQuiz = I.length > 0 && Array.isArray(I[0][3]);
+            var isMultipleChoiceQuiz = I.length > 0 && I[0][2] === '0' && Array.isArray(I[0][3]);
+
+            console.log(isGapFillQuiz, isShortAnswerQuiz, isMultipleChoiceQuiz);
     
             if (isGapFillQuiz) {
                 // Gap-fill quiz logic
@@ -36,6 +39,27 @@
                         if (gapElement) {
                             // Fill in the answer
                             gapElement.value = answer;
+                        }
+                    }
+                }
+            } else if (isMultipleChoiceQuiz) {
+                console.log("Detected multiple choice quiz");
+                // Multiple-choice quiz logic
+                for (var qNum = 0; qNum < I.length; qNum++) {
+                    if (I[qNum] && I[qNum][3] && Array.isArray(I[qNum][3])) {
+                        var answers = I[qNum][3];
+                        for (var aNum = 0; aNum < answers.length; aNum++) {
+                            var answer = answers[aNum];
+                            if (answer && answer[2] >= 1) {
+                                // Correct answer found
+                                var buttonId = 'Q_' + qNum + '_' + aNum + '_Btn';
+                                var button = document.getElementById(buttonId);
+                                if (button) {
+                                    // Simulate a click on the correct answer's button
+                                    button.click();
+                                }
+                                break; // Move to the next question after finding the correct answer
+                            }
                         }
                     }
                 }
@@ -150,6 +174,31 @@
             }
             if (typeof DoCapitalization === 'function') {
                 DoCapitalization();
+            }
+        }
+        else if (typeof JsonEx !== 'undefined' && JsonEx.LeftItems && JsonEx.RightItems) {
+            // Matching exercise logic
+            for (let i = 0; i < JsonEx.LeftItems.length; i++) {
+                let leftItem = JsonEx.LeftItems[i];
+                let leftGroup = leftItem.Group;
+
+                // Find the matching right item
+                let matchingRightItem = JsonEx.RightItems.find(rightItem => {
+                    return rightItem.Groups.includes(leftGroup);
+                });
+
+                if (matchingRightItem) {
+                    // Find the select element corresponding to the left item
+                    let selectElement = document.getElementById('R_' + leftItem.OrigPos);
+                    if (selectElement) {
+                        // Set the value of the select element to the OrigPos of the matching right item
+                        selectElement.value = matchingRightItem.OrigPos;
+
+                        // Trigger the change event if necessary
+                        let event = new Event('change', { bubbles: true });
+                        selectElement.dispatchEvent(event);
+                    }
+                }
             }
         }
         else {
